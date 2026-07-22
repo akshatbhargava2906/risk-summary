@@ -358,6 +358,11 @@
 
     .link-back { font-size: 13px; color: #1a56db; cursor: pointer; text-decoration: none; }
 
+    .review-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .api-url-field { display: flex; align-items: center; gap: 8px; }
+    .api-url-field label { font-size: 12px; color: #888; white-space: nowrap; }
+    .api-url-field input { width: 320px; max-width: 50vw; padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; color: #333; }
+
     .info-grid {
       display: grid; grid-template-columns: 1fr 1fr; gap: 0;
       border: 1px solid #eee; border-radius: 8px; overflow: hidden;
@@ -380,7 +385,6 @@
     .doc-item button { border: none; background: none; cursor: pointer; color: #c0392b; font-size: 14px; }
     .doc-empty { font-size: 13px; color: #999; padding: 8px 0; }
 
-    .api-row input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
 
     .status { font-size: 13px; color: #555; min-height: 20px; text-align: center; }
     .status.error { color: #c0392b; }
@@ -527,7 +531,13 @@
 
   <!-- Route: #/review -->
   <div class="page hidden" id="page-review">
-    <a class="link-back" id="link-edit">&larr; Edit personal details</a>
+    <div class="review-header">
+      <a class="link-back" id="link-edit">&larr; Edit personal details</a>
+      <div class="api-url-field">
+        <label for="api-url">API URL</label>
+        <input type="text" id="api-url" value="https://insurance-risk-analyser.cfapps.eu10-004.hana.ondemand.com/analyse">
+      </div>
+    </div>
 
     <div class="card">
       <h2>Personal Details Summary</h2>
@@ -545,13 +555,6 @@
       <h2>Medical Documents</h2>
       <input type="file" id="file-input" accept=".pdf" multiple>
       <div class="doc-list" id="doc-list"></div>
-    </div>
-
-    <div class="card">
-      <h2>API URL</h2>
-      <div class="api-row">
-        <input type="text" id="api-url" value="https://insurance-risk-analyser.cfapps.eu10-004.hana.ondemand.com/analyse">
-      </div>
       <button class="btn-primary" id="btn-analyse" disabled>Analyze and Give Summary</button>
       <div class="status" id="status"></div>
     </div>
