@@ -2,6 +2,7 @@ from pathlib import Path
 from src.pdf_utils import bytes_to_base64
 from src.client import extract_indicators, generate_analysis
 from src.risk_scorer import score_report
+from concurrent.futures import ThreadPoolExecutor
 from src.cache import save_cache, load_cache
 
 
@@ -74,10 +75,14 @@ def run(files: list[tuple[str, bytes]], questionnaire: dict) -> dict:
         all_indicators = cached
         docs_processed = ["cache"]
     else:
+        with ThreadPoolExecutor(max_workers=min(len(files), 8)) as executor:
+            extractions = list(executor.map(
+                lambda pair: extract_indicators(bytes_to_base64(pair[1])), files
+            ))
+
         all_indicators = []
         docs_processed = []
-        for filename, data in files:
-            extraction = extract_indicators(bytes_to_base64(data))
+        for (filename, _), extraction in zip(files, extractions):
             indicators = extraction.get("indicators", [])
             for ind in indicators:
                 ind["doc_type"] = extraction.get("doc_type", "medical")

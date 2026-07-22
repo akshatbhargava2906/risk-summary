@@ -124,6 +124,29 @@ Status rules:
     return _parse_json(raw)
 
 
+def generate_patient_summary(questionnaire: dict) -> str:
+    body = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 512,
+        "system": (
+            "You are an insurance intake assistant. Summarize the applicant's personal, "
+            "physical, occupational, medical history, family history, and financial profile "
+            "in a concise plain-English paragraph for an underwriter. Never give a coverage "
+            "or pricing decision — only observations."
+        ),
+        "messages": [
+            {
+                "role": "user",
+                "content": (
+                    f"Applicant intake data (JSON):\n{json.dumps(questionnaire, indent=2)}\n\n"
+                    "Write a short narrative summary of this applicant."
+                ),
+            }
+        ],
+    }
+    return _invoke_claude(body, timeout=60)["content"][0]["text"]
+
+
 def generate_analysis(risk_score: int, risk_tier: str, flagged: list, questionnaire: dict = None) -> str:
     lines = "\n".join(
         f"- [{i.get('doc_type', 'unknown').upper()}] {i['name']}: {i['value']} {i['unit']} "
