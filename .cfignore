@@ -1,0 +1,12 @@
+.cache/
+.chroma/
+.env
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+Documents/
+demo.html
+testapi.py
