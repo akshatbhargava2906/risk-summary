@@ -1,0 +1,55 @@
+{
+  "claim_ref": "CLM-4788376960",
+  "submitted_at": "2026-07-23T06:32:56Z",
+  "patient_data": {
+    "patient_name": "John Doe",
+    "date_of_birth": "2000-06-29",
+    "gender": "male",
+    "relationship": "spouse",
+    "phone": "687462",
+    "email": "8bcxkjs@gg.com",
+    "address": "3wf",
+    "policy_number": "839024",
+    "member_id": "4325",
+    "claim_type": "hospitalization",
+    "treatment_date": "2026-07-07",
+    "provider_name": "3242",
+    "diagnosis": "3242",
+    "claim_amount": "1000",
+    "previous_insurance": "no",
+    "previous_insurance_details": ""
+  },
+  "verification": {
+    "documents": [
+      {
+        "filename": "AI Medical test New 1.pdf",
+        "comparisons": [
+          {
+            "field": "patient_name",
+            "form_value": "John Doe",
+            "document_value": "Wayne Rooney",
+            "matched": false
+          },
+          {
+            "field": "date_of_birth",
+            "form_value": "2000-06-29",
+            "document_value": "",
+            "matched": false
+          },
+          {
+            "field": "gender",
+            "form_value": "male",
+            "document_value": "Male",
+            "matched": true
+          }
+        ],
+        "has_mismatch": true
+      }
+    ],
+    "has_any_mismatch": true
+  },
+  "documents": [
+    "AI Medical test New 1.pdf"
+  ],
+  "status": "submitted"
+}

@@ -1,0 +1,55 @@
+{
+  "claim_ref": "CLM-4782289653",
+  "submitted_at": "2026-07-23T04:51:29Z",
+  "patient_data": {
+    "patient_name": "John Q Doe",
+    "date_of_birth": "1981-03-14",
+    "gender": "male",
+    "relationship": "self",
+    "phone": "+49 30 5550 1847 ",
+    "email": "j.doe_synth@example.de",
+    "address": "Karl-Marx-Stra\u00dfe 112, 12043 Berlin, Germany ",
+    "policy_number": "AKV-2018-339201",
+    "member_id": "MBR-00383",
+    "claim_type": "hospitalization",
+    "treatment_date": "2014-10-02",
+    "provider_name": "University Medical Center, Dept. of Pathology ",
+    "diagnosis": "Blood Test",
+    "claim_amount": "2000",
+    "previous_insurance": "no",
+    "previous_insurance_details": ""
+  },
+  "verification": {
+    "documents": [
+      {
+        "filename": "CBC-sample-report-with-notes_0.pdf",
+        "comparisons": [
+          {
+            "field": "patient_name",
+            "form_value": "John Q Doe",
+            "document_value": "Doe, John Q.",
+            "matched": false
+          },
+          {
+            "field": "date_of_birth",
+            "form_value": "1981-03-14",
+            "document_value": "01/01/1941",
+            "matched": false
+          },
+          {
+            "field": "gender",
+            "form_value": "male",
+            "document_value": "M",
+            "matched": false
+          }
+        ],
+        "has_mismatch": true
+      }
+    ],
+    "has_any_mismatch": true
+  },
+  "documents": [
+    "CBC-sample-report-with-notes_0.pdf"
+  ],
+  "status": "submitted"
+}

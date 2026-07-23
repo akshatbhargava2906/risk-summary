@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediClaim Assist</title>
+<style>
+  body{margin:0;background:oklch(97% 0.01 250);font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  ::placeholder{color:oklch(65% 0.01 260)}
+  input,select,textarea{font-family:inherit}
+
+  .wrap{min-height:100vh;padding:32px 16px 72px;display:flex;flex-direction:column;align-items:center}
+  .header{width:100%;max-width:800px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px}
+  .header-left{display:flex;align-items:center;gap:12px}
+  .logo{width:38px;height:38px;border-radius:8px;background:oklch(48% 0.14 250);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;letter-spacing:0.5px;flex:none}
+  .brand-title{font-size:15px;font-weight:700;color:oklch(22% 0.02 260)}
+  .brand-sub{font-size:12px;color:oklch(48% 0.02 260)}
+
+  .api-url-field{display:flex;align-items:center;gap:8px}
+  .api-url-field label{font-size:12px;color:oklch(48% 0.02 260);white-space:nowrap}
+  .api-url-field input{width:280px;max-width:40vw;padding:6px 10px;border:1px solid oklch(86% 0.01 260);border-radius:6px;font-size:12px;color:oklch(30% 0.02 260)}
+
+  .card{width:100%;max-width:800px;background:#fff;border:1px solid oklch(90% 0.01 260);border-radius:12px;box-shadow:0 1px 2px oklch(0% 0 0 / 0.04);overflow:hidden}
+
+  .steps{display:flex;padding:26px 32px 22px;border-bottom:1px solid oklch(92% 0.01 260)}
+  .step-item{display:flex;align-items:center;flex:1;min-width:0}
+  .step-item-inner{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;flex:none}
+  .step-circle{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
+  .step-label{font-size:10.5px;font-weight:600;white-space:nowrap;text-align:center}
+  .step-line{height:2px;flex:1;margin:0 6px;margin-bottom:20px}
+
+  .content{padding:32px}
+  .step-title{font-size:19px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:4px}
+  .step-sub{font-size:13px;color:oklch(48% 0.02 260);margin-bottom:24px}
+
+  .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 20px}
+  .field-full{grid-column:1 / -1}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:oklch(38% 0.02 260);margin-bottom:6px}
+  .field .required{color:oklch(55% 0.18 25)}
+  .field input, .field select, .field textarea{width:100%;padding:10px 12px;border:1px solid oklch(86% 0.01 260);border-radius:7px;font-size:14px;color:oklch(22% 0.02 260);background:#fff;outline:none}
+  .field textarea{min-height:72px;resize:vertical}
+  .field-err{font-size:12px;color:oklch(55% 0.18 25);margin-top:5px}
+
+  .radio-row{display:flex;gap:16px;align-items:center;height:42px}
+  .radio-row label{display:flex;align-items:center;gap:6px;font-size:14px;color:oklch(30% 0.02 260);font-weight:400}
+
+  .dropzone{border:2px dashed oklch(78% 0.02 250);border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;background:oklch(98.5% 0.005 250)}
+  .dropzone-icon{width:42px;height:42px;border-radius:10px;background:oklch(93% 0.03 250);color:oklch(48% 0.14 250);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px}
+  .dropzone-title{font-size:14px;font-weight:600;color:oklch(28% 0.02 260)}
+  .dropzone-sub{font-size:12px;color:oklch(55% 0.02 260);margin-top:4px}
+
+  .doc-list{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .doc-item{display:flex;align-items:center;gap:12px;border:1px solid oklch(90% 0.01 260);border-radius:8px;padding:10px 12px}
+  .doc-ext{width:36px;height:36px;border-radius:6px;background:oklch(90% 0.01 260);color:oklch(35% 0.02 260);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none}
+  .doc-meta{flex:1;min-width:0}
+  .doc-name{font-size:13px;font-weight:600;color:oklch(25% 0.02 260);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .doc-size{font-size:11.5px;color:oklch(52% 0.02 260)}
+  .doc-category{font-size:12.5px;padding:6px 8px;border:1px solid oklch(88% 0.01 260);border-radius:6px;background:#fff;color:oklch(30% 0.02 260)}
+  .doc-remove{width:28px;height:28px;border-radius:6px;border:1px solid oklch(90% 0.01 260);background:#fff;color:oklch(50% 0.02 260);cursor:pointer;font-size:14px;flex:none}
+
+  .review-block{border:1px solid oklch(92% 0.01 260);border-radius:10px;overflow:hidden}
+  .review-section-head{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;background:oklch(98.5% 0.005 250);border-bottom:1px solid oklch(92% 0.01 260);border-top:1px solid oklch(92% 0.01 260)}
+  .review-block .review-section-head:first-child{border-top:none}
+  .review-section-title{font-size:13px;font-weight:700;color:oklch(28% 0.02 260)}
+  .review-edit{font-size:12.5px;font-weight:600;color:oklch(48% 0.14 250);cursor:pointer}
+  .review-body{padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 20px}
+  .review-label{font-size:11.5px;color:oklch(55% 0.02 260);margin-bottom:2px}
+  .review-val{font-size:13.5px;color:oklch(25% 0.02 260);font-weight:500}
+  .review-docs{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+  .review-doc-row{display:flex;align-items:center;gap:10px;font-size:13px;color:oklch(30% 0.02 260)}
+  .review-doc-ext{width:22px;height:22px;border-radius:5px;background:oklch(90% 0.01 260);color:oklch(35% 0.02 260);display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;flex:none}
+  .review-doc-cat{color:oklch(52% 0.02 260);font-size:12px}
+
+  .verify-body{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+  .btn-verify{align-self:flex-start;padding:9px 16px;border-radius:7px;border:1px solid oklch(48% 0.14 250);background:#fff;color:oklch(48% 0.14 250);font-size:13px;font-weight:600;cursor:pointer}
+  .btn-verify:disabled{opacity:0.5;cursor:not-allowed}
+  .verify-status{font-size:12.5px;color:oklch(48% 0.02 260)}
+  .verify-status.error{color:oklch(55% 0.18 25)}
+  .verify-doc{border:1px solid oklch(92% 0.01 260);border-radius:8px;padding:12px 14px}
+  .verify-doc-name{font-size:12.5px;font-weight:700;color:oklch(28% 0.02 260);margin-bottom:8px}
+  .verify-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:13px}
+  .verify-field{color:oklch(48% 0.02 260)}
+  .verify-values{color:oklch(25% 0.02 260)}
+  .verify-badge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px}
+  .verify-badge.match{background:oklch(90% 0.06 150);color:oklch(38% 0.14 150)}
+  .verify-badge.mismatch{background:oklch(92% 0.08 30);color:oklch(48% 0.18 25)}
+  .verify-warning{font-size:12.5px;color:oklch(48% 0.18 25);background:oklch(97% 0.03 30);border:1px solid oklch(88% 0.06 30);border-radius:8px;padding:10px 12px}
+  .verify-warning a{color:oklch(48% 0.14 250);cursor:pointer;font-weight:600}
+
+  .attestation{display:flex;align-items:flex-start;gap:10px;margin-top:20px;font-size:13px;color:oklch(35% 0.02 260)}
+  .attestation input{margin-top:2px}
+
+  .confirm{text-align:center;padding:20px 0 8px}
+  .confirm-check{width:56px;height:56px;border-radius:50%;background:oklch(90% 0.06 150);color:oklch(40% 0.14 150);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 18px}
+  .confirm-title{font-size:21px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:6px}
+  .confirm-sub{font-size:14px;color:oklch(48% 0.02 260);max-width:420px;margin:0 auto 24px}
+  .confirm-box{display:inline-flex;flex-direction:column;gap:10px;background:oklch(98.5% 0.005 250);border:1px solid oklch(92% 0.01 260);border-radius:10px;padding:18px 28px;text-align:left;margin-bottom:24px}
+  .confirm-box-row{display:flex;justify-content:space-between;gap:24px;font-size:13px}
+  .confirm-box-row span:first-child{color:oklch(52% 0.02 260)}
+  .confirm-box-row span:last-child{font-weight:700;color:oklch(22% 0.02 260)}
+  .confirm-notes{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:oklch(48% 0.02 260);text-align:left;max-width:420px;margin:0 auto 8px}
+
+  .footer{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;border-top:1px solid oklch(92% 0.01 260)}
+  .btn-back{padding:11px 20px;border-radius:8px;border:1px solid oklch(85% 0.01 260);background:#fff;color:oklch(30% 0.02 260);font-size:14px;font-weight:600;cursor:pointer}
+  .btn-next{padding:11px 24px;border-radius:8px;border:none;background:oklch(48% 0.14 250);color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+
+  .footnote{width:100%;max-width:800px;margin-top:14px;font-size:11.5px;color:oklch(58% 0.02 260);text-align:center}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">MC</div>
+        <div>
+          <div class="brand-title">MediClaim Assist</div>
+          <div class="brand-sub">Medical Insurance Claim Submission</div>
+        </div>
+      </div>
+      <div class="api-url-field">
+        <label for="api-url">API URL</label>
+        <input type="text" id="api-url" value="http://127.0.0.1:8000">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="steps" id="steps"></div>
+      <div class="content" id="content"></div>
+      <div class="footer" id="footer"></div>
+    </div>
+
+    <div class="footnote">Your information is encrypted and used solely for claims processing purposes.</div>
+  </div>
+
+  <script>
+    const STEP_LABELS = ["Personal Info", "Claim Details", "Documents", "Review", "Confirmation"];
+    const CATEGORY_LABELS = { bill: "Medical bill / receipt", discharge: "Discharge summary / diagnosis", prescription: "Prescription", other: "Other" };
+
+    const state = {
+      step: 0,
+      personal: { fullName: "", dob: "", gender: "", relationship: "", phone: "", email: "", address: "", policyNumber: "", memberId: "", employerGroup: "" },
+      claim: { claimType: "", treatmentDate: "", providerName: "", diagnosis: "", claimAmount: "", previousInsurance: "no", previousInsuranceDetails: "" },
+      documents: [],
+      errors: {},
+      attestation: false,
+      claimRef: "",
+      submittedDateLabel: "",
+      verification: null,
+      verifying: false,
+      verifyError: "",
+    };
+
+    function extOf(name) {
+      const parts = name.split(".");
+      return (parts.length > 1 ? parts.pop() : "FILE").slice(0, 4).toUpperCase();
+    }
+    function sizeLabel(bytes) {
+      return bytes > 1024 * 1024 ? (bytes / (1024 * 1024)).toFixed(1) + " MB" : Math.max(1, Math.round(bytes / 1024)) + " KB";
+    }
+
+    // ─ Step indicator ─
+
+    function renderSteps() {
+      document.getElementById("steps").innerHTML = STEP_LABELS.map((label, i) => {
+        const isDone = i < state.step;
+        const isActive = i === state.step;
+        const circleBg = (isDone || isActive) ? "oklch(48% 0.14 250)" : "oklch(93% 0.01 260)";
+        const circleColor = (isDone || isActive) ? "#fff" : "oklch(55% 0.02 260)";
+        const labelColor = isActive ? "oklch(30% 0.02 260)" : "oklch(58% 0.02 260)";
+        const lineBg = i < state.step ? "oklch(48% 0.14 250)" : "oklch(90% 0.01 260)";
+        const showLine = i < STEP_LABELS.length - 1;
+        return `
+          <div class="step-item">
+            <div class="step-item-inner">
+              <div class="step-circle" style="background:${circleBg};color:${circleColor}">${isDone ? "&#10003;" : i + 1}</div>
+              <div class="step-label" style="color:${labelColor}">${label}</div>
+            </div>
+            ${showLine ? `<div class="step-line" style="background:${lineBg}"></div>` : ""}
+          </div>`;
+      }).join("");
+    }
+
+    // ─ Field helpers ─
+
+    function field(labelText, required, name, inputHtml, full) {
+      const err = state.errors[name];
+      return `
+        <div class="field${full ? " field-full" : ""}">
+          <label>${labelText} ${required ? '<span class="required">*</span>' : ""}</label>
+          ${inputHtml}
+          ${err ? `<div class="field-err">${err}</div>` : ""}
+        </div>`;
+    }
+
+    // ─ Step 0: Personal & Policy Information ─
+
+    function renderStep0() {
+      const p = state.personal;
+      return `
+        <div class="step-title">Personal &amp; Policy Information</div>
+        <div class="step-sub">Enter the applicant's details exactly as they appear on the insurance policy.</div>
+        <div class="field-grid">
+          ${field("Full legal name", true, "fullName", `<input type="text" name="fullName" value="${p.fullName}" placeholder="Jane A. Doe">`)}
+          ${field("Date of birth", true, "dob", `<input type="date" name="dob" value="${p.dob}">`)}
+          ${field("Gender", true, "gender", `
+            <select name="gender">
+              <option value="">Select</option>
+              <option value="female" ${p.gender === "female" ? "selected" : ""}>Female</option>
+              <option value="male" ${p.gender === "male" ? "selected" : ""}>Male</option>
+              <option value="other" ${p.gender === "other" ? "selected" : ""}>Other</option>
+              <option value="prefer_not_to_say" ${p.gender === "prefer_not_to_say" ? "selected" : ""}>Prefer not to say</option>
+            </select>`)}
+          ${field("Relationship to policyholder", true, "relationship", `
+            <select name="relationship">
+              <option value="">Select</option>
+              <option value="self" ${p.relationship === "self" ? "selected" : ""}>Self</option>
+              <option value="spouse" ${p.relationship === "spouse" ? "selected" : ""}>Spouse</option>
+              <option value="child" ${p.relationship === "child" ? "selected" : ""}>Child</option>
+              <option value="other" ${p.relationship === "other" ? "selected" : ""}>Other dependent</option>
+            </select>`)}
+          ${field("Phone number", true, "phone", `<input type="tel" name="phone" value="${p.phone}" placeholder="(555) 123-4567">`)}
+          ${field("Email address", true, "email", `<input type="email" name="email" value="${p.email}" placeholder="jane.doe@email.com">`)}
+          ${field("Mailing address", true, "address", `<input type="text" name="address" value="${p.address}" placeholder="Street, City, State, ZIP">`, true)}
+          ${field("Policy number", true, "policyNumber", `<input type="text" name="policyNumber" value="${p.policyNumber}" placeholder="POL-000000">`)}
+          ${field("Member ID", true, "memberId", `<input type="text" name="memberId" value="${p.memberId}" placeholder="MBR-000000">`)}
+          ${field("Employer / group name", false, "employerGroup", `<input type="text" name="employerGroup" value="${p.employerGroup}" placeholder="Optional">`)}
+        </div>`;
+    }
+
+    // ─ Step 1: Claim Details ─
+
+    function renderStep1() {
+      const c = state.claim;
+      return `
+        <div class="step-title">Claim Details</div>
+        <div class="step-sub">Tell us about the treatment being claimed.</div>
+        <div class="field-grid">
+          ${field("Claim type", true, "claimType", `
+            <select name="claimType">
+              <option value="">Select</option>
+              <option value="hospitalization" ${c.claimType === "hospitalization" ? "selected" : ""}>Hospitalization</option>
+              <option value="outpatient" ${c.claimType === "outpatient" ? "selected" : ""}>Outpatient treatment</option>
+              <option value="pharmacy" ${c.claimType === "pharmacy" ? "selected" : ""}>Pharmacy</option>
+              <option value="dental" ${c.claimType === "dental" ? "selected" : ""}>Dental</option>
+              <option value="other" ${c.claimType === "other" ? "selected" : ""}>Other</option>
+            </select>`)}
+          ${field("Date of treatment", true, "treatmentDate", `<input type="date" name="treatmentDate" value="${c.treatmentDate}">`)}
+          ${field("Hospital / clinic / provider name", true, "providerName", `<input type="text" name="providerName" value="${c.providerName}" placeholder="e.g. St. Mary General Hospital">`, true)}
+          ${field("Diagnosis / reason for treatment", true, "diagnosis", `<input type="text" name="diagnosis" value="${c.diagnosis}" placeholder="e.g. Fractured wrist">`, true)}
+          ${field("Claim amount (USD)", true, "claimAmount", `<input type="number" name="claimAmount" value="${c.claimAmount}" placeholder="0.00">`)}
+          <div class="field">
+            <label>Any other applicable insurance?</label>
+            <div class="radio-row">
+              <label><input type="radio" name="previousInsurance" value="no" ${c.previousInsurance !== "yes" ? "checked" : ""}> No</label>
+              <label><input type="radio" name="previousInsurance" value="yes" ${c.previousInsurance === "yes" ? "checked" : ""}> Yes</label>
+            </div>
+          </div>
+          ${c.previousInsurance === "yes" ? `
+            <div class="field field-full">
+              <label>Other insurance details</label>
+              <textarea name="previousInsuranceDetails" placeholder="Insurer name, policy number, amount already claimed">${c.previousInsuranceDetails}</textarea>
+            </div>` : ""}
+        </div>`;
+    }
+
+    // ─ Step 2: Supporting Documents ─
+
+    function renderStep2() {
+      const err = state.errors.documents;
+      return `
+        <div class="step-title">Supporting Documents</div>
+        <div class="step-sub">Upload medical bills, discharge summaries, and prescriptions related to this claim. PDF, JPG, or PNG.</div>
+        <div class="dropzone" id="dropzone">
+          <div class="dropzone-icon">&#8593;</div>
+          <div class="dropzone-title">Drag and drop files here, or click to browse</div>
+          <div class="dropzone-sub">Accepted: PDF, JPG, PNG</div>
+          <input id="file-input" type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style="display:none">
+        </div>
+        ${err ? `<div class="field-err">${err}</div>` : ""}
+        ${state.documents.length ? `
+          <div class="doc-list">
+            ${state.documents.map(d => `
+              <div class="doc-item">
+                <div class="doc-ext">${extOf(d.name)}</div>
+                <div class="doc-meta">
+                  <div class="doc-name">${d.name}</div>
+                  <div class="doc-size">${sizeLabel(d.size)}</div>
+                </div>
+                <select class="doc-category" data-action="set-category" data-id="${d.id}">
+                  <option value="bill" ${d.category === "bill" ? "selected" : ""}>Medical bill / receipt</option>
+                  <option value="discharge" ${d.category === "discharge" ? "selected" : ""}>Discharge summary / diagnosis</option>
+                  <option value="prescription" ${d.category === "prescription" ? "selected" : ""}>Prescription</option>
+                  <option value="other" ${d.category === "other" ? "selected" : ""}>Other</option>
+                </select>
+                <button class="doc-remove" data-action="remove-doc" data-id="${d.id}">&times;</button>
+              </div>`).join("")}
+          </div>` : ""}`;
+    }
+
+    // ─ Step 3: Review + AI Verification ─
+
+    function apiBase() {
+      return document.getElementById("api-url").value.trim().replace(/\/$/, "");
+    }
+
+    function verifyEndpoint() {
+      return apiBase() + "/applicant/verify-identity";
+    }
+
+    function buildPatientData() {
+      const p = state.personal, c = state.claim;
+      return {
+        patient_name: p.fullName,
+        date_of_birth: p.dob,
+        gender: p.gender,
+        relationship: p.relationship,
+        phone: p.phone,
+        email: p.email,
+        address: p.address,
+        policy_number: p.policyNumber,
+        member_id: p.memberId,
+        claim_type: c.claimType,
+        treatment_date: c.treatmentDate,
+        provider_name: c.providerName,
+        diagnosis: c.diagnosis,
+        claim_amount: c.claimAmount,
+        previous_insurance: c.previousInsurance,
+        previous_insurance_details: c.previousInsuranceDetails,
+      };
+    }
+
+    function renderVerificationCard() {
+      let body;
+      if (state.verifying) {
+        body = `<div class="verify-status">Verifying against uploaded documents&hellip;</div>`;
+      } else if (state.verifyError) {
+        body = `
+          <button class="btn-verify" data-action="run-verify">Run Identity Verification</button>
+          <div class="verify-status error">${state.verifyError}</div>`;
+      } else if (!state.verification) {
+        body = `
+          <button class="btn-verify" data-action="run-verify">Run Identity Verification</button>
+          <div class="verify-status">Compares the name, date of birth, and gender on your form against what's found in the uploaded documents.</div>`;
+      } else {
+        const v = state.verification;
+        body = `
+          <button class="btn-verify" data-action="run-verify">Re-run Verification</button>
+          ${v.documents.map(d => `
+            <div class="verify-doc">
+              <div class="verify-doc-name">${d.filename}</div>
+              ${d.comparisons.map(c => `
+                <div class="verify-row">
+                  <span class="verify-field">${c.field.replace(/_/g, " ")}</span>
+                  <span class="verify-values">${c.form_value || "&mdash;"} ${c.document_value ? `vs ${c.document_value}` : "(not found in document)"}</span>
+                  <span class="verify-badge ${c.matched ? "match" : "mismatch"}">${c.matched ? "Match" : "Mismatch"}</span>
+                </div>`).join("")}
+            </div>`).join("")}
+          ${v.has_any_mismatch ? `
+            <div class="verify-warning">
+              Some details don't match your uploaded documents.
+              <a data-action="goto-0">Edit personal information</a> to correct them.
+            </div>` : ""}`;
+      }
+      return `
+        <div class="review-section-head">
+          <div class="review-section-title">Identity Verification (AI)</div>
+        </div>
+        <div class="verify-body">${body}</div>`;
+    }
+
+    function renderStep3() {
+      const p = state.personal, c = state.claim;
+      return `
+        <div class="step-title">Review Your Claim</div>
+        <div class="step-sub">Please confirm the details below are accurate before submitting.</div>
+
+        <div class="review-block">
+          <div class="review-section-head">
+            <div class="review-section-title">Personal &amp; Policy Information</div>
+            <div class="review-edit" data-action="goto-0">Edit</div>
+          </div>
+          <div class="review-body">
+            <div><div class="review-label">Name</div><div class="review-val">${p.fullName}</div></div>
+            <div><div class="review-label">Date of birth</div><div class="review-val">${p.dob}</div></div>
+            <div><div class="review-label">Relationship</div><div class="review-val">${p.relationship}</div></div>
+            <div><div class="review-label">Contact</div><div class="review-val">${p.phone} &middot; ${p.email}</div></div>
+            <div style="grid-column:1 / -1"><div class="review-label">Address</div><div class="review-val">${p.address}</div></div>
+            <div><div class="review-label">Policy number</div><div class="review-val">${p.policyNumber}</div></div>
+            <div><div class="review-label">Member ID</div><div class="review-val">${p.memberId}</div></div>
+          </div>
+
+          <div class="review-section-head">
+            <div class="review-section-title">Claim Details</div>
+            <div class="review-edit" data-action="goto-1">Edit</div>
+          </div>
+          <div class="review-body">
+            <div><div class="review-label">Claim type</div><div class="review-val">${c.claimType}</div></div>
+            <div><div class="review-label">Treatment date</div><div class="review-val">${c.treatmentDate}</div></div>
+            <div><div class="review-label">Provider</div><div class="review-val">${c.providerName}</div></div>
+            <div><div class="review-label">Diagnosis</div><div class="review-val">${c.diagnosis}</div></div>
+            <div><div class="review-label">Claim amount</div><div class="review-val">${c.claimAmount ? "$" + Number(c.claimAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : ""}</div></div>
+          </div>
+
+          <div class="review-section-head">
+            <div class="review-section-title">Documents (${state.documents.length})</div>
+            <div class="review-edit" data-action="goto-2">Edit</div>
+          </div>
+          <div class="review-docs">
+            ${state.documents.map(d => `
+              <div class="review-doc-row">
+                <span class="review-doc-ext">${extOf(d.name)}</span>
+                <span style="flex:1">${d.name}</span>
+                <span class="review-doc-cat">${CATEGORY_LABELS[d.category] || "Other"}</span>
+              </div>`).join("")}
+          </div>
+
+          ${renderVerificationCard()}
+        </div>
+
+        <label class="attestation">
+          <input type="checkbox" id="attestation" ${state.attestation ? "checked" : ""}>
+          I certify that the information and documents provided are true and complete to the best of my knowledge.
+        </label>
+        <div class="verify-status" id="submit-status" style="margin-top:10px"></div>`;
+    }
+
+    // ─ Step 4: Confirmation ─
+
+    function renderStep4() {
+      return `
+        <div class="confirm">
+          <div class="confirm-check">&#10003;</div>
+          <div class="confirm-title">Claim Submitted</div>
+          <div class="confirm-sub">Your claim has been received and is now being reviewed. You'll receive email updates on its status.</div>
+          <div class="confirm-box">
+            <div class="confirm-box-row"><span>Claim reference</span><span>${state.claimRef}</span></div>
+            <div class="confirm-box-row"><span>Submitted</span><span>${state.submittedDateLabel}</span></div>
+            <div class="confirm-box-row"><span>Estimated review time</span><span>5&ndash;7 business days</span></div>
+          </div>
+          <div class="confirm-notes">
+            <div>&bull; Save your claim reference number for tracking.</div>
+            <div>&bull; A claims adjuster may contact you if further documentation is needed.</div>
+            <div>&bull; You can check claim status any time from your account dashboard.</div>
+          </div>
+        </div>`;
+    }
+
+    // ─ Footer ─
+
+    function renderFooter() {
+      if (state.step === 4) {
+        document.getElementById("footer").innerHTML = "";
+        return;
+      }
+      const canGoBack = state.step > 0;
+      const nextLabel = state.step === 3 ? "Submit Claim" : "Continue";
+      document.getElementById("footer").innerHTML = `
+        ${canGoBack ? `<button class="btn-back" data-action="back">Back</button>` : `<div></div>`}
+        <button class="btn-next" data-action="next">${nextLabel}</button>`;
+    }
+
+    // ─ Root render ─
+
+    function render() {
+      renderSteps();
+      const stepFns = [renderStep0, renderStep1, renderStep2, renderStep3, renderStep4];
+      document.getElementById("content").innerHTML = stepFns[state.step]();
+      renderFooter();
+      attachDropzone();
+    }
+
+    // ─ Validation ─
+
+    function validateStep(step) {
+      const errors = {};
+      const p = state.personal, c = state.claim;
+      if (step === 0) {
+        ["fullName", "dob", "gender", "relationship", "phone", "email", "address", "policyNumber", "memberId"].forEach(k => {
+          if (!p[k] || !p[k].toString().trim()) errors[k] = "This field is required.";
+        });
+        if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) errors.email = "Enter a valid email address.";
+      } else if (step === 1) {
+        ["claimType", "treatmentDate", "providerName", "diagnosis", "claimAmount"].forEach(k => {
+          if (!c[k] || !c[k].toString().trim()) errors[k] = "This field is required.";
+        });
+        if (c.claimAmount && Number(c.claimAmount) <= 0) errors.claimAmount = "Enter a valid amount.";
+      } else if (step === 2) {
+        if (!state.documents.length) errors.documents = "Upload at least one supporting document.";
+      }
+      return errors;
+    }
+
+    // ─ Navigation ─
+
+    function goToStep(n) {
+      state.step = n;
+      state.errors = {};
+      render();
+    }
+
+    function handleBack() {
+      state.step = Math.max(0, state.step - 1);
+      state.errors = {};
+      render();
+    }
+
+    function handleNext() {
+      if (state.step === 3) { handleSubmit(); return; }
+      const errors = validateStep(state.step);
+      if (Object.keys(errors).length) { state.errors = errors; render(); return; }
+      state.step += 1;
+      state.errors = {};
+      render();
+    }
+
+    async function handleSubmit() {
+      const nextBtn = document.querySelector('button[data-action="next"]');
+      const statusEl = document.getElementById("submit-status");
+      if (nextBtn) nextBtn.disabled = true;
+      if (statusEl) { statusEl.textContent = "Submitting claim…"; statusEl.className = "verify-status"; }
+
+      const form = new FormData();
+      for (const d of state.documents) form.append("files", d.file, d.name);
+      form.append("patient_data", JSON.stringify(buildPatientData()));
+
+      try {
+        const res = await fetch(apiBase() + "/applicant/submit-claim", { method: "POST", body: form });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(err.detail || res.statusText);
+        }
+        const data = await res.json();
+        state.claimRef = data.claim_ref;
+        state.submittedDateLabel = new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+        state.step = 4;
+        render();
+      } catch (e) {
+        if (statusEl) { statusEl.textContent = "Error: " + e.message; statusEl.className = "verify-status error"; }
+        if (nextBtn) nextBtn.disabled = false;
+      }
+    }
+
+    // ─ Documents ─
+
+    function addFiles(fileList) {
+      const arr = Array.from(fileList || []).map(f => ({
+        id: Math.random().toString(36).slice(2) + Date.now(),
+        file: f,
+        name: f.name,
+        size: f.size,
+        category: "bill",
+      }));
+      if (!arr.length) return;
+      state.documents = [...state.documents, ...arr];
+      if (state.errors.documents) delete state.errors.documents;
+      invalidateVerification();
+      render();
+    }
+
+    function invalidateVerification() {
+      state.verification = null;
+      state.verifyError = "";
+    }
+
+    function attachDropzone() {
+      const dz = document.getElementById("dropzone");
+      if (!dz) return;
+      const input = document.getElementById("file-input");
+      dz.addEventListener("click", () => input.click());
+      dz.addEventListener("dragover", (e) => e.preventDefault());
+      dz.addEventListener("drop", (e) => { e.preventDefault(); addFiles(e.dataTransfer.files); });
+      input.addEventListener("change", (e) => { addFiles(e.target.files); e.target.value = ""; });
+    }
+
+    // ─ Identity verification (calls backend) ─
+
+    async function runVerification() {
+      if (!state.documents.length) return;
+      state.verifying = true;
+      state.verifyError = "";
+      render();
+
+      const form = new FormData();
+      for (const d of state.documents) form.append("files", d.file, d.name);
+      form.append("patient_data", JSON.stringify(buildPatientData()));
+
+      try {
+        const res = await fetch(verifyEndpoint(), { method: "POST", body: form });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ detail: res.statusText }));
+          throw new Error(err.detail || res.statusText);
+        }
+        state.verification = await res.json();
+      } catch (e) {
+        state.verifyError = "Error: " + e.message;
+      } finally {
+        state.verifying = false;
+        render();
+      }
+    }
+
+    // ─ Event delegation ─
+
+    document.getElementById("content").addEventListener("input", (e) => {
+      const name = e.target.name;
+      if (!name) return;
+      if (state.step === 0) state.personal[name] = e.target.value;
+      else if (state.step === 1) state.claim[name] = e.target.value;
+      if (state.errors[name]) delete state.errors[name];
+    });
+
+    document.getElementById("content").addEventListener("change", (e) => {
+      const name = e.target.name;
+      if (name) {
+        if (state.step === 0) state.personal[name] = e.target.value;
+        else if (state.step === 1) {
+          state.claim[name] = e.target.value;
+          if (name === "previousInsurance") render();
+        }
+        if (state.errors[name]) delete state.errors[name];
+      }
+      if (e.target.dataset.action === "set-category") {
+        const doc = state.documents.find(d => d.id === e.target.dataset.id);
+        if (doc) doc.category = e.target.value;
+      }
+      if (e.target.id === "attestation") state.attestation = e.target.checked;
+    });
+
+    document.getElementById("content").addEventListener("click", (e) => {
+      const action = e.target.dataset.action;
+      if (!action) return;
+      if (action === "remove-doc") {
+        state.documents = state.documents.filter(d => d.id !== e.target.dataset.id);
+        invalidateVerification();
+        render();
+      } else if (action === "goto-0") goToStep(0);
+      else if (action === "goto-1") goToStep(1);
+      else if (action === "goto-2") goToStep(2);
+      else if (action === "run-verify") runVerification();
+    });
+
+    document.getElementById("footer").addEventListener("click", (e) => {
+      const action = e.target.dataset.action;
+      if (action === "back") handleBack();
+      else if (action === "next") handleNext();
+    });
+
+    render();
+  </script>
+</body>
+</html>
