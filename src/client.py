@@ -124,6 +124,40 @@ Status rules:
     return _parse_json(raw)
 
 
+def extract_personal_info(pdf_b64: str) -> dict:
+    system = """You are a document identity-extraction assistant.
+Extract ONLY the patient's personal/identity details from this document — do not extract clinical indicators.
+Return ONLY valid JSON — no explanation, no markdown fences:
+{
+  "patient_name": "string",
+  "age": "string",
+  "gender": "string",
+  "date_of_birth": "string"
+}
+If a field is not found in the document, use an empty string."""
+
+    body = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "max_tokens": 256,
+        "system": system,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "document",
+                        "source": {"type": "base64", "media_type": "application/pdf", "data": pdf_b64},
+                    },
+                    {"type": "text", "text": "Extract the patient's identity details and return the JSON."},
+                ],
+            }
+        ],
+    }
+
+    raw = _invoke_claude(body)["content"][0]["text"]
+    return _parse_json(raw)
+
+
 def generate_patient_summary(questionnaire: dict) -> str:
     body = {
         "anthropic_version": "bedrock-2023-05-31",
