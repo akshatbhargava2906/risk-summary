@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body{margin:0;background:oklch(97% 0.01 250);font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  *{box-sizing:border-box}
+  ::placeholder{color:oklch(65% 0.01 260)}
+  input,select,textarea{font-family:inherit}
+</style>
+</helmet>
+
+<div style="min-height:100vh;padding:32px 16px 72px;display:flex;flex-direction:column;align-items:center">
+
+  <div style="width:100%;max-width:800px;display:flex;align-items:center;gap:12px;margin-bottom:24px">
+    <div style="width:38px;height:38px;border-radius:8px;background:oklch(48% 0.14 250);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;letter-spacing:0.5px;flex:none">MC</div>
+    <div>
+      <div style="font-size:15px;font-weight:700;color:oklch(22% 0.02 260)">MediClaim Assist</div>
+      <div style="font-size:12px;color:oklch(48% 0.02 260)">Medical Insurance Claim Submission</div>
+    </div>
+  </div>
+
+  <div style="width:100%;max-width:800px;background:white;border:1px solid oklch(90% 0.01 260);border-radius:12px;box-shadow:0 1px 2px oklch(0% 0 0 / 0.04);overflow:hidden">
+
+    <div style="display:flex;padding:26px 32px 22px;border-bottom:1px solid oklch(92% 0.01 260)">
+      <sc-for list="{{ stepMeta }}" as="s" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;flex:1;min-width:0">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;flex:none">
+            <div style="{{ s.circleStyle }}">{{ s.circleContent }}</div>
+            <div style="{{ s.labelStyle }}">{{ s.label }}</div>
+          </div>
+          <sc-if value="{{ s.showLine }}" hint-placeholder-val="{{ true }}">
+            <div style="{{ s.lineStyle }}"></div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="padding:32px">
+
+      <sc-if value="{{ isStep0 }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <div style="font-size:19px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:4px">Personal &amp; Policy Information</div>
+          <div style="font-size:13px;color:oklch(48% 0.02 260);margin-bottom:24px">Enter the applicant's details exactly as they appear on the insurance policy.</div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 20px">
+            <div>
+              <label style="{{ labelStyle }}">Full legal name <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="fullName" value="{{ personal.fullName }}" onChange="{{ onPersonalChange }}" placeholder="Jane A. Doe" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.fullName }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.fullName }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Date of birth <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="date" name="dob" value="{{ personal.dob }}" onChange="{{ onPersonalChange }}" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.dob }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.dob }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Gender <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <select name="gender" value="{{ personal.gender }}" onChange="{{ onPersonalChange }}" style="{{ inputStyle }}">
+                <option value="">Select</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="other">Other</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+              <sc-if value="{{ errors.gender }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.gender }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Relationship to policyholder <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <select name="relationship" value="{{ personal.relationship }}" onChange="{{ onPersonalChange }}" style="{{ inputStyle }}">
+                <option value="">Select</option>
+                <option value="self">Self</option>
+                <option value="spouse">Spouse</option>
+                <option value="child">Child</option>
+                <option value="other">Other dependent</option>
+              </select>
+              <sc-if value="{{ errors.relationship }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.relationship }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Phone number <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="tel" name="phone" value="{{ personal.phone }}" onChange="{{ onPersonalChange }}" placeholder="(555) 123-4567" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.phone }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.phone }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Email address <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="email" name="email" value="{{ personal.email }}" onChange="{{ onPersonalChange }}" placeholder="jane.doe@email.com" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.email }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.email }}</div></sc-if>
+            </div>
+            <div style="grid-column:1 / -1">
+              <label style="{{ labelStyle }}">Mailing address <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="address" value="{{ personal.address }}" onChange="{{ onPersonalChange }}" placeholder="Street, City, State, ZIP" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.address }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.address }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Policy number <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="policyNumber" value="{{ personal.policyNumber }}" onChange="{{ onPersonalChange }}" placeholder="POL-000000" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.policyNumber }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.policyNumber }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Member ID <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="memberId" value="{{ personal.memberId }}" onChange="{{ onPersonalChange }}" placeholder="MBR-000000" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.memberId }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.memberId }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Employer / group name</label>
+              <input type="text" name="employerGroup" value="{{ personal.employerGroup }}" onChange="{{ onPersonalChange }}" placeholder="Optional" style="{{ inputStyle }}" />
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:19px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:4px">Claim Details</div>
+          <div style="font-size:13px;color:oklch(48% 0.02 260);margin-bottom:24px">Tell us about the treatment being claimed.</div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px 20px">
+            <div>
+              <label style="{{ labelStyle }}">Claim type <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <select name="claimType" value="{{ claim.claimType }}" onChange="{{ onClaimChange }}" style="{{ inputStyle }}">
+                <option value="">Select</option>
+                <option value="hospitalization">Hospitalization</option>
+                <option value="outpatient">Outpatient treatment</option>
+                <option value="pharmacy">Pharmacy</option>
+                <option value="dental">Dental</option>
+                <option value="other">Other</option>
+              </select>
+              <sc-if value="{{ errors.claimType }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.claimType }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Date of treatment <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="date" name="treatmentDate" value="{{ claim.treatmentDate }}" onChange="{{ onClaimChange }}" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.treatmentDate }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.treatmentDate }}</div></sc-if>
+            </div>
+            <div style="grid-column:1 / -1">
+              <label style="{{ labelStyle }}">Hospital / clinic / provider name <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="providerName" value="{{ claim.providerName }}" onChange="{{ onClaimChange }}" placeholder="e.g. St. Mary General Hospital" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.providerName }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.providerName }}</div></sc-if>
+            </div>
+            <div style="grid-column:1 / -1">
+              <label style="{{ labelStyle }}">Diagnosis / reason for treatment <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="text" name="diagnosis" value="{{ claim.diagnosis }}" onChange="{{ onClaimChange }}" placeholder="e.g. Fractured wrist" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.diagnosis }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.diagnosis }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Claim amount (USD) <span style="color:oklch(55% 0.18 25)">*</span></label>
+              <input type="number" name="claimAmount" value="{{ claim.claimAmount }}" onChange="{{ onClaimChange }}" placeholder="0.00" style="{{ inputStyle }}" />
+              <sc-if value="{{ errors.claimAmount }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }}">{{ errors.claimAmount }}</div></sc-if>
+            </div>
+            <div>
+              <label style="{{ labelStyle }}">Any other applicable insurance?</label>
+              <div style="display:flex;gap:16px;align-items:center;height:42px">
+                <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:oklch(30% 0.02 260)"><input type="radio" name="previousInsurance" value="no" checked="{{ claim.previousInsuranceNoChecked }}" onChange="{{ onClaimChange }}" /> No</label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:14px;color:oklch(30% 0.02 260)"><input type="radio" name="previousInsurance" value="yes" checked="{{ claim.previousInsuranceYesChecked }}" onChange="{{ onClaimChange }}" /> Yes</label>
+              </div>
+            </div>
+            <sc-if value="{{ claim.showPreviousInsuranceDetails }}" hint-placeholder-val="{{ false }}">
+              <div style="grid-column:1 / -1">
+                <label style="{{ labelStyle }}">Other insurance details</label>
+                <textarea name="previousInsuranceDetails" value="{{ claim.previousInsuranceDetails }}" onChange="{{ onClaimChange }}" placeholder="Insurer name, policy number, amount already claimed" style="{{ inputStyle }};min-height:72px;resize:vertical"></textarea>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:19px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:4px">Supporting Documents</div>
+          <div style="font-size:13px;color:oklch(48% 0.02 260);margin-bottom:20px">Upload medical bills, discharge summaries, and prescriptions related to this claim. PDF, JPG, or PNG — up to 10MB each.</div>
+
+          <div onClick="{{ onDropzoneClick }}" onDragOver="{{ onDragOver }}" onDrop="{{ onDrop }}" style="border:2px dashed oklch(78% 0.02 250);border-radius:10px;padding:32px 20px;text-align:center;cursor:pointer;background:oklch(98.5% 0.005 250)">
+            <div style="width:42px;height:42px;border-radius:10px;background:oklch(93% 0.03 250);color:oklch(48% 0.14 250);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px">&#8593;</div>
+            <div style="font-size:14px;font-weight:600;color:oklch(28% 0.02 260)">Drag and drop files here, or click to browse</div>
+            <div style="font-size:12px;color:oklch(55% 0.02 260);margin-top:4px">Accepted: PDF, JPG, PNG</div>
+            <input ref="{{ fileInputRef }}" type="file" multiple="{{ true }}" onChange="{{ onFileInputChange }}" style="display:none" />
+          </div>
+          <sc-if value="{{ errors.documents }}" hint-placeholder-val="{{ false }}"><div style="{{ errStyle }};margin-top:8px">{{ errors.documents }}</div></sc-if>
+
+          <sc-if value="{{ hasDocuments }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:20px">
+              <sc-for list="{{ documentsView }}" as="d" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:12px;border:1px solid oklch(90% 0.01 260);border-radius:8px;padding:10px 12px">
+                  <div style="width:36px;height:36px;border-radius:6px;background:oklch(90% 0.01 260);color:oklch(35% 0.02 260);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none">{{ d.ext }}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13px;font-weight:600;color:oklch(25% 0.02 260);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.name }}</div>
+                    <div style="font-size:11.5px;color:oklch(52% 0.02 260)">{{ d.sizeLabel }}</div>
+                  </div>
+                  <select value="{{ d.category }}" onChange="{{ d.onCategoryChange }}" style="font-size:12.5px;padding:6px 8px;border:1px solid oklch(88% 0.01 260);border-radius:6px;background:white;color:oklch(30% 0.02 260)">
+                    <option value="bill">Medical bill / receipt</option>
+                    <option value="discharge">Discharge summary / diagnosis</option>
+                    <option value="prescription">Prescription</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <button onClick="{{ d.remove }}" style="width:28px;height:28px;border-radius:6px;border:1px solid oklch(90% 0.01 260);background:white;color:oklch(50% 0.02 260);cursor:pointer;font-size:14px;flex:none">&times;</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <div style="font-size:19px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:4px">Review Your Claim</div>
+          <div style="font-size:13px;color:oklch(48% 0.02 260);margin-bottom:20px">Please confirm the details below are accurate before submitting.</div>
+
+          <div style="border:1px solid oklch(92% 0.01 260);border-radius:10px;overflow:hidden">
+            <div style="padding:16px 18px;display:flex;justify-content:space-between;align-items:center;background:oklch(98.5% 0.005 250);border-bottom:1px solid oklch(92% 0.01 260)">
+              <div style="font-size:13px;font-weight:700;color:oklch(28% 0.02 260)">Personal &amp; Policy Information</div>
+              <div onClick="{{ goToStep0 }}" style="font-size:12.5px;font-weight:600;color:oklch(48% 0.14 250);cursor:pointer">Edit</div>
+            </div>
+            <div style="padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 20px">
+              <div><div style="{{ reviewLabelStyle }}">Name</div><div style="{{ reviewValStyle }}">{{ personal.fullName }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Date of birth</div><div style="{{ reviewValStyle }}">{{ personal.dob }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Relationship</div><div style="{{ reviewValStyle }}">{{ personal.relationship }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Contact</div><div style="{{ reviewValStyle }}">{{ personal.phone }} &middot; {{ personal.email }}</div></div>
+              <div style="grid-column:1 / -1"><div style="{{ reviewLabelStyle }}">Address</div><div style="{{ reviewValStyle }}">{{ personal.address }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Policy number</div><div style="{{ reviewValStyle }}">{{ personal.policyNumber }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Member ID</div><div style="{{ reviewValStyle }}">{{ personal.memberId }}</div></div>
+            </div>
+
+            <div style="padding:16px 18px;display:flex;justify-content:space-between;align-items:center;background:oklch(98.5% 0.005 250);border-top:1px solid oklch(92% 0.01 260);border-bottom:1px solid oklch(92% 0.01 260)">
+              <div style="font-size:13px;font-weight:700;color:oklch(28% 0.02 260)">Claim Details</div>
+              <div onClick="{{ goToStep1 }}" style="font-size:12.5px;font-weight:600;color:oklch(48% 0.14 250);cursor:pointer">Edit</div>
+            </div>
+            <div style="padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px 20px">
+              <div><div style="{{ reviewLabelStyle }}">Claim type</div><div style="{{ reviewValStyle }}">{{ claim.claimType }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Treatment date</div><div style="{{ reviewValStyle }}">{{ claim.treatmentDate }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Provider</div><div style="{{ reviewValStyle }}">{{ claim.providerName }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Diagnosis</div><div style="{{ reviewValStyle }}">{{ claim.diagnosis }}</div></div>
+              <div><div style="{{ reviewLabelStyle }}">Claim amount</div><div style="{{ reviewValStyle }}">{{ claim.claimAmountLabel }}</div></div>
+            </div>
+
+            <div style="padding:16px 18px;display:flex;justify-content:space-between;align-items:center;background:oklch(98.5% 0.005 250);border-top:1px solid oklch(92% 0.01 260);border-bottom:1px solid oklch(92% 0.01 260)">
+              <div style="font-size:13px;font-weight:700;color:oklch(28% 0.02 260)">Documents ({{ documentsCount }})</div>
+              <div onClick="{{ goToStep2 }}" style="font-size:12.5px;font-weight:600;color:oklch(48% 0.14 250);cursor:pointer">Edit</div>
+            </div>
+            <div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ documentsView }}" as="d" hint-placeholder-count="0">
+                <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:oklch(30% 0.02 260)">
+                  <span style="width:22px;height:22px;border-radius:5px;background:oklch(90% 0.01 260);color:oklch(35% 0.02 260);display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;flex:none">{{ d.ext }}</span>
+                  <span style="flex:1">{{ d.name }}</span>
+                  <span style="color:oklch(52% 0.02 260);font-size:12px">{{ d.categoryLabel }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <label style="display:flex;align-items:flex-start;gap:10px;margin-top:20px;font-size:13px;color:oklch(35% 0.02 260)">
+            <input type="checkbox" checked="{{ attestation }}" onChange="{{ onAttestationChange }}" style="margin-top:2px" />
+            I certify that the information and documents provided are true and complete to the best of my knowledge.
+          </label>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isStep4 }}" hint-placeholder-val="{{ false }}">
+        <div style="text-align:center;padding:20px 0 8px">
+          <div style="width:56px;height:56px;border-radius:50%;background:oklch(90% 0.06 150);color:oklch(40% 0.14 150);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;margin:0 auto 18px">&#10003;</div>
+          <div style="font-size:21px;font-weight:700;color:oklch(22% 0.02 260);margin-bottom:6px">Claim Submitted</div>
+          <div style="font-size:14px;color:oklch(48% 0.02 260);max-width:420px;margin:0 auto 24px">Your claim has been received and is now being reviewed. You'll receive email updates on its status.</div>
+
+          <div style="display:inline-flex;flex-direction:column;gap:10px;background:oklch(98.5% 0.005 250);border:1px solid oklch(92% 0.01 260);border-radius:10px;padding:18px 28px;text-align:left;margin-bottom:24px">
+            <div style="display:flex;justify-content:space-between;gap:24px;font-size:13px"><span style="color:oklch(52% 0.02 260)">Claim reference</span><span style="font-weight:700;color:oklch(22% 0.02 260)">{{ claimRef }}</span></div>
+            <div style="display:flex;justify-content:space-between;gap:24px;font-size:13px"><span style="color:oklch(52% 0.02 260)">Submitted</span><span style="font-weight:700;color:oklch(22% 0.02 260)">{{ submittedDateLabel }}</span></div>
+            <div style="display:flex;justify-content:space-between;gap:24px;font-size:13px"><span style="color:oklch(52% 0.02 260)">Estimated review time</span><span style="font-weight:700;color:oklch(22% 0.02 260)">5&ndash;7 business days</span></div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:oklch(48% 0.02 260);text-align:left;max-width:420px;margin:0 auto 8px">
+            <div>&bull; Save your claim reference number for tracking.</div>
+            <div>&bull; A claims adjuster may contact you if further documentation is needed.</div>
+            <div>&bull; You can check claim status any time from your account dashboard.</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:20px 32px;border-top:1px solid oklch(92% 0.01 260)">
+        <sc-if value="{{ canGoBack }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ handleBack }}" style="padding:11px 20px;border-radius:8px;border:1px solid oklch(85% 0.01 260);background:white;color:oklch(30% 0.02 260);font-size:14px;font-weight:600;cursor:pointer">Back</button>
+        </sc-if>
+        <div style="{{ noBackSpacer }}"></div>
+        <button onClick="{{ handleNext }}" style="padding:11px 24px;border-radius:8px;border:none;background:oklch(48% 0.14 250);color:white;font-size:14px;font-weight:700;cursor:pointer">{{ nextLabel }}</button>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <div style="width:100%;max-width:800px;margin-top:14px;font-size:11.5px;color:oklch(58% 0.02 260);text-align:center">
+    Your information is encrypted and used solely for claims processing purposes.
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const LABEL_STYLE = "display:block;font-size:12.5px;font-weight:600;color:oklch(38% 0.02 260);margin-bottom:6px";
+const INPUT_STYLE = "width:100%;padding:10px 12px;border:1px solid oklch(86% 0.01 260);border-radius:7px;font-size:14px;color:oklch(22% 0.02 260);background:white;outline:none";
+const ERR_STYLE = "font-size:12px;color:oklch(55% 0.18 25);margin-top:5px";
+const STEP_LABELS = ["Personal Info","Claim Details","Documents","Review","Confirmation"];
+const CATEGORY_LABELS = { bill: "Medical bill / receipt", discharge: "Discharge summary / diagnosis", prescription: "Prescription", other: "Other" };
+
+class Component extends DCLogic {
+  state = {
+    step: 0,
+    personal: { fullName:"", dob:"", gender:"", relationship:"", phone:"", email:"", address:"", policyNumber:"", memberId:"", employerGroup:"" },
+    claim: { claimType:"", treatmentDate:"", providerName:"", diagnosis:"", claimAmount:"", previousInsurance:"no", previousInsuranceDetails:"" },
+    documents: [],
+    errors: {},
+    attestation: false,
+    claimRef: "",
+    submittedDateLabel: ""
+  };
+
+  fileInputRef = React.createRef();
+
+  onPersonalChange = (e) => {
+    const { name, value } = e.target;
+    this.setState(s => ({ personal: { ...s.personal, [name]: value }, errors: { ...s.errors, [name]: undefined } }));
+  };
+
+  onClaimChange = (e) => {
+    const { name, value } = e.target;
+    this.setState(s => ({ claim: { ...s.claim, [name]: value }, errors: { ...s.errors, [name]: undefined } }));
+  };
+
+  onAttestationChange = (e) => this.setState({ attestation: e.target.checked });
+
+  onDropzoneClick = () => { if (this.fileInputRef.current) this.fileInputRef.current.click(); };
+  onDragOver = (e) => e.preventDefault();
+  onDrop = (e) => { e.preventDefault(); this.addFiles(e.dataTransfer.files); };
+  onFileInputChange = (e) => { this.addFiles(e.target.files); e.target.value = ""; };
+
+  addFiles = (fileList) => {
+    const arr = Array.from(fileList || []).map(f => ({
+      id: Math.random().toString(36).slice(2) + Date.now(),
+      name: f.name,
+      size: f.size,
+      category: "bill"
+    }));
+    if (!arr.length) return;
+    this.setState(s => ({ documents: [...s.documents, ...arr], errors: { ...s.errors, documents: undefined } }));
+  };
+
+  removeDocument = (id) => this.setState(s => ({ documents: s.documents.filter(d => d.id !== id) }));
+  setCategory = (id, value) => this.setState(s => ({ documents: s.documents.map(d => d.id === id ? { ...d, category: value } : d) }));
+
+  goToStep = (n) => this.setState({ step: n, errors: {} });
+
+  validateStep(step) {
+    const errors = {};
+    const p = this.state.personal, c = this.state.claim;
+    if (step === 0) {
+      ["fullName","dob","gender","relationship","phone","email","address","policyNumber","memberId"].forEach(k => {
+        if (!p[k] || !p[k].toString().trim()) errors[k] = "This field is required.";
+      });
+      if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) errors.email = "Enter a valid email address.";
+    } else if (step === 1) {
+      ["claimType","treatmentDate","providerName","diagnosis","claimAmount"].forEach(k => {
+        if (!c[k] || !c[k].toString().trim()) errors[k] = "This field is required.";
+      });
+      if (c.claimAmount && Number(c.claimAmount) <= 0) errors.claimAmount = "Enter a valid amount.";
+    } else if (step === 2) {
+      if (!this.state.documents.length) errors.documents = "Upload at least one supporting document.";
+    }
+    return errors;
+  }
+
+  handleBack = () => this.setState(s => ({ step: Math.max(0, s.step - 1), errors: {} }));
+
+  handleNext = () => {
+    const step = this.state.step;
+    if (step === 3) { this.handleSubmit(); return; }
+    const errors = this.validateStep(step);
+    if (Object.keys(errors).length) { this.setState({ errors }); return; }
+    this.setState(s => ({ step: s.step + 1, errors: {} }));
+  };
+
+  handleSubmit = () => {
+    const ref = "CLM-" + Date.now().toString().slice(-8);
+    const d = new Date();
+    this.setState({
+      step: 4,
+      claimRef: ref,
+      submittedDateLabel: d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })
+    });
+  };
+
+  renderVals() {
+    const { step, personal, claim, documents, errors, attestation, claimRef, submittedDateLabel } = this.state;
+
+    const stepMeta = STEP_LABELS.map((label, i) => {
+      const done = i < step || (i === 4 && step === 4 && i < step);
+      const isDone = i < step;
+      const isActive = i === step;
+      const circleBg = isDone ? "oklch(48% 0.14 250)" : isActive ? "oklch(48% 0.14 250)" : "oklch(93% 0.01 260)";
+      const circleColor = isDone || isActive ? "white" : "oklch(55% 0.02 260)";
+      return {
+        label,
+        circleContent: isDone ? "\u2713" : (i + 1).toString(),
+        circleStyle: `width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:${circleBg};color:${circleColor};flex:none`,
+        labelStyle: `font-size:10.5px;font-weight:600;color:${isActive ? "oklch(30% 0.02 260)" : "oklch(58% 0.02 260)"};white-space:nowrap;text-align:center`,
+        showLine: i < STEP_LABELS.length - 1,
+        lineStyle: `height:2px;flex:1;margin:0 6px;margin-bottom:20px;background:${i < step ? "oklch(48% 0.14 250)" : "oklch(90% 0.01 260)"}`
+      };
+    });
+
+    const extOf = (name) => {
+      const parts = name.split(".");
+      return (parts.length > 1 ? parts.pop() : "FILE").slice(0, 4).toUpperCase();
+    };
+    const sizeLabel = (bytes) => bytes > 1024 * 1024 ? (bytes / (1024*1024)).toFixed(1) + " MB" : Math.max(1, Math.round(bytes / 1024)) + " KB";
+
+    const documentsView = documents.map(d => ({
+      ...d,
+      ext: extOf(d.name),
+      sizeLabel: sizeLabel(d.size),
+      categoryLabel: CATEGORY_LABELS[d.category] || "Other",
+      onCategoryChange: (e) => this.setCategory(d.id, e.target.value),
+      remove: () => this.removeDocument(d.id)
+    }));
+
+    const claimAmountLabel = claim.claimAmount ? "$" + Number(claim.claimAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "";
+
+    return {
+      stepMeta,
+      isStep0: step === 0, isStep1: step === 1, isStep2: step === 2, isStep3: step === 3, isStep4: step === 4,
+      personal, claim: { ...claim, claimAmountLabel, previousInsuranceNoChecked: claim.previousInsurance !== "yes", previousInsuranceYesChecked: claim.previousInsurance === "yes", showPreviousInsuranceDetails: claim.previousInsurance === "yes" },
+      errors,
+      labelStyle: LABEL_STYLE, inputStyle: INPUT_STYLE, errStyle: ERR_STYLE,
+      reviewLabelStyle: "font-size:11.5px;color:oklch(55% 0.02 260);margin-bottom:2px",
+      reviewValStyle: "font-size:13.5px;color:oklch(25% 0.02 260);font-weight:500",
+      onPersonalChange: this.onPersonalChange,
+      onClaimChange: this.onClaimChange,
+      onAttestationChange: this.onAttestationChange,
+      onDropzoneClick: this.onDropzoneClick,
+      onDragOver: this.onDragOver,
+      onDrop: this.onDrop,
+      onFileInputChange: this.onFileInputChange,
+      fileInputRef: this.fileInputRef,
+      hasDocuments: documents.length > 0,
+      documentsCount: documents.length,
+      documentsView,
+      attestation,
+      goToStep0: () => this.goToStep(0),
+      goToStep1: () => this.goToStep(1),
+      goToStep2: () => this.goToStep(2),
+      claimRef, submittedDateLabel,
+      handleBack: this.handleBack,
+      handleNext: this.handleNext,
+      canGoBack: step > 0 && step < 4,
+      noBackSpacer: step === 0 ? "flex:none;width:1px" : "display:none",
+      nextLabel: step === 3 ? "Submit Claim" : (step === 4 ? "" : "Continue"),
+      showFooter: step < 4
+    };
+  }
+}
+
+</script>
+</body>
+</html>
