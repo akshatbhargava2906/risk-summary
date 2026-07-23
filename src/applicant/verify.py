@@ -27,7 +27,7 @@ def verify_personal_info(files: list[tuple[str, bytes]], form_data: dict) -> dic
     for (filename, _), extracted in zip(files, extractions):
         comparisons = [
             _compare_field("patient_name", form_data.get("patient_name", ""), extracted.get("patient_name", "")),
-            _compare_field("age", form_data.get("age", ""), extracted.get("age", "")),
+            _compare_field("date_of_birth", form_data.get("date_of_birth", ""), extracted.get("date_of_birth", "")),
             _compare_field("gender", form_data.get("gender", ""), extracted.get("gender", "")),
         ]
         per_document.append({
